@@ -187,6 +187,22 @@ require('menu-principal.inc.php');
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="form-group">
+                                <label class="control-label">CPF/CNPJ:</label>
+                                <input type="text" name="cpf_cnpj" maxlength="20" class="form-control cpf" value="<?php echo (!is_null($pessoa) && !is_null($pessoa->cpf_cnpj)) ? $pessoa->cpf_cnpj : ''; ?>" />
+                            </div>
+                        </div>
+                        <?php if ((is_null($pessoa) || $pessoa->tipo == TIPO_ALUNO)) : ?>
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label class="control-label">Valor da Mensalidade:</label>
+                                <input type="text" name="valor_mensalidade" maxlength="20" class="form-control money text-right" value="<?php echo (!is_null($pessoa) && $pessoa->valor_mensalidade > 0) ? number_format($pessoa->valor_mensalidade, 2, ',', '.') : ''; ?>" />
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                    </div>
                 </div><!--panel-body-->
             </div><!--panel-default-->
             

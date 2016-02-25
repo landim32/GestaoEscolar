@@ -42,6 +42,15 @@ $urlEditar .= '-'.$usuarioAtual->id_usuario;
                     </ul>
                 </li>
                 <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Financeiro <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="<?php echo WEB_PATH; ?>/admin/movimentos"><i class="icon icon-users"></i> Movimentos</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="<?php echo WEB_PATH; ?>/admin/movimentos?ac=gerar&ano=<?php echo date('Y'); ?>"><i class="icon icon-calendar"></i> <?php echo "Gerar movimentos de ".date('Y'); ?></a> </li>
+                        <li><a href="<?php echo WEB_PATH; ?>/admin/movimento-imprimir?ano=<?php echo date('Y'); ?>"><i class="icon icon-print"></i> <?php echo "Imprimir Carnês de ".date('Y'); ?></a> </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Usuários <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="<?php echo WEB_PATH; ?>/admin/usuarios"><i class="icon icon-users"></i> Usuários</a></li>

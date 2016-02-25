@@ -94,9 +94,9 @@ foreign key (id_escola) REFERENCES escola(id_escola)
 
 create table movimento (
 id_movimento int not null auto_increment,
-id_tipo int not null,
 id_escola int not null,
 id_pessoa int not null,
+cod_tipo int not null,
 id_aluno int,
 tipo char(1) not null default 'c',
 data_inclusao datetime not null,
@@ -106,7 +106,6 @@ credito double,
 debito double,
 cod_situacao tinyint not null default 1,
 primary key(id_movimento),
-foreign key (id_tipo) REFERENCES movimento_tipo(id_tipo),
 foreign key (id_escola) REFERENCES escola(id_escola),
 foreign key (id_pessoa) REFERENCES pessoa(id_pessoa),
 foreign key (id_aluno) REFERENCES pessoa(id_pessoa)

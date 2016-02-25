@@ -4,6 +4,21 @@ require('common.inc.php');
 $regraPessoa = new Pessoa();
 $regraCurso = new Curso();
 
+$meses = array(
+    1 => 'Janeiro',
+    2 => 'Fevereiro',
+    3 => 'Março',
+    4 => 'Abril',
+    5 => 'Maio',
+    6 => 'Junho',
+    7 => 'Julho',
+    8 => 'Agosto',
+    9 => 'Setembro',
+    10 => 'Outubro',
+    11 => 'Novembro',
+    12 => 'Dezembro'
+);
+
 try {
     
     if (array_key_exists('responsavel', $_GET) && array_key_exists('aluno', $_GET)) {
@@ -30,6 +45,21 @@ try {
         header('Location: '.WEB_PATH.'/admin/pessoa?pessoa='.$id_pessoa.'&sucesso='.  urlencode($msgsucesso));
         exit();
     }
+    if (array_key_exists('gerar', $_GET)) {
+        $regraMovimento = new Movimento();
+        
+        $id_pessoa = intval($_GET['pessoa']);
+        $dados = explode('-', $_GET['gerar']);
+        $mes = intval($dados[0]);
+        if (!($mes > 0))
+            $mes = null;
+        $ano = intval($dados[1]);
+        
+        $msgsucesso = 'Movimentos gerados com sucesso!';
+        $regraMovimento->gerarMensalidade($ano, $mes, $id_pessoa);
+        header('Location: '.WEB_PATH.'/admin/pessoa?pessoa='.$id_pessoa.'&sucesso='.  urlencode($msgsucesso));
+        exit();
+    }
 }
 catch (Exception $e) {
     $msgerro = $e->getMessage();
@@ -38,22 +68,45 @@ catch (Exception $e) {
 $id_pessoa = intval($_GET['pessoa']);
 if ($id_pessoa > 0) {
     $pessoa = $regraPessoa->pegar($id_pessoa);
+    $GLOBALS['_pessoa'] = $pessoa;
 }
 
 require("header.inc.php");
 require('menu-principal.inc.php');
+require('movimento-modal.inc.php');
+require('movimento-pagar.inc.php');
+require('movimento-cancelar.inc.php');
 ?>
 <div class="container" style="margin-top: 80px">
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-5">
             <ol class="breadcrumb">
                 <li><i class="icon icon-home"></i> <a href="<?php echo WEB_PATH; ?>/admin/">Início</a></li>
                 <li class="current"><i class="icon icon-users"></i> <a href="<?php echo WEB_PATH; ?>/admin/pessoas">Pessoas</a></li>
+                <li class="current"><i class="icon icon-user"></i> <a href="<?php echo WEB_PATH; ?>/admin/pessoa?pessoa=<?php echo $pessoa->id_pessoa; ?>"><?php echo $pessoa->nome; ?></a></li>
             </ol>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-7">
             <ul class="nav nav-pills pull-right">
                 <?php if (!is_null($pessoa)) : ?>
+                <?php if ($pessoa->tipo === TIPO_ALUNO) : ?>
+                <li role="presentation" class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                        <i class="icon icon-dollar"></i> Gerar <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="<?php echo WEB_PATH; ?>/admin/pessoa?pessoa=<?php echo $pessoa->id_pessoa; ?>&gerar=0-<?php echo date('Y'); ?>"><i class="icon icon-calendar"></i> <?php echo "Todo o ano de ".date('Y'); ?></a> </li>
+                        <li role="separator" class="divider"></li>
+                        <?php for ($i = 1; $i <= 12; $i++) : ?>
+                        <li><a href="<?php echo WEB_PATH; ?>/admin/pessoa?pessoa=<?php echo $pessoa->id_pessoa; ?>&gerar=<?php echo $i; ?>-<?php echo date('Y'); ?>"><i class="icon icon-calendar"></i> <?php echo $meses[$i]." de ".date('Y'); ?></a> </li>
+                        <?php endfor; ?>
+                    </ul>
+                </li>
+                <li><a href="#" class="movimento" data-aluno="<?php echo $pessoa->id_pessoa; ?>" data-aluno-nome="<?php echo $pessoa->nome; ?>"><i class="icon icon-dollar"></i> <span>Novo movimento</span></a></li>
+                <?php else : ?>
+                <li><a target="_blank" href="movimento-imprimir?pessoa=<?php echo $pessoa->id_pessoa; ?>&ano=<?php echo date('Y'); ?>"><i class="icon icon-print"></i> <span>Imprimir Carnê <?php echo date('Y'); ?></span></a></li>
+                <li><a href="#" class="movimento" data-pessoa="<?php echo $pessoa->id_pessoa; ?>" data-pessoa-nome="<?php echo $pessoa->nome; ?>"><i class="icon icon-dollar"></i> <span>Novo movimento</span></a></li>
+                <?php endif; ?>
                 <li><a href="<?php echo WEB_PATH; ?>/admin/pessoa-form?pessoa=<?php echo $pessoa->id_pessoa; ?>"><i class="icon icon-pencil"></i> <span>Alterar</span></a></li>
                 <li><a href="<?php echo WEB_PATH; ?>/admin/pessoa-form?excluir=<?php echo $pessoa->id_pessoa; ?>"><i class="icon icon-remove"></i> <span>Excluir</span></a></li>
                 <?php endif; ?>
@@ -105,6 +158,14 @@ require('menu-principal.inc.php');
                                 <?php if ($pessoa->id_turma > 0) : ?>
                                 <dt>Turma:</dt>
                                 <dd><?php echo $pessoa->turma; ?></dd>
+                                <?php endif; ?>
+                                <?php if (!isNullOrEmpty($pessoa->cpf_cnpj)) : ?>
+                                <dt>CPF/CNPJ:</dt>
+                                <dd><?php echo $pessoa->cpf_cnpj; ?></dd>
+                                <?php endif; ?>
+                                <?php if ($pessoa->valor_mensalidade > 0) : ?>
+                                <dt>Valor da Mensalidade:</dt>
+                                <dd><?php echo number_format($pessoa->valor_mensalidade, 2, ',', '.'); ?></dd>
                                 <?php endif; ?>
                                 <?php if (!is_null($pessoa->data_nascimento)) : ?>
                                 <dt>Dt. Nasc.:</dt>
@@ -285,6 +346,11 @@ require('menu-principal.inc.php');
             </div><!--panel-default-->
             <?php endif; //$pessoa->tipo == TIPO_RESPONSAVEL ?>
         </div><!--col-md-4-->
+    </div><!--row-->
+    <div class="row">
+        <div class="col-md-12">
+            <?php require('movimento.inc.php'); ?>
+        </div><!--col-md-12-->
     </div><!--row-->
 </div>
 

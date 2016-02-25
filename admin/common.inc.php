@@ -7,6 +7,7 @@ require(dirname(__DIR__).'/core/Curso.inc.php');
 require(dirname(__DIR__).'/core/Turma.inc.php');
 require(dirname(__DIR__).'/core/Usuario.inc.php');
 require(dirname(__DIR__).'/core/Pessoa.inc.php');
+require(dirname(__DIR__).'/core/Movimento.inc.php');
 
 $timeout = 60 * 60 * 24 * 30; // 30 dias
 @ini_set('session.gc_maxlifetime', $timeout);
@@ -28,4 +29,28 @@ if(basename($_SERVER["SCRIPT_FILENAME"], '.php') != 'login') {
         exit();
     }
 }
+
+if (count($_POST) > 0) {
+    $regraMovimento = new Movimento();
+    if ($_POST['acao'] == 'movimento-novo') {
+        $movimento = $regraMovimento->pegarDoPost();
+        $regraMovimento->inserir($movimento);
+    }
+    elseif ($_POST['acao'] == 'movimento-pagar') {
+        $id_movimento = intval($_POST['id_movimento']);
+        $valor = $_POST['valor_pago'];
+        $observacao = $_POST['observacao'];
+        $regraMovimento->pagar($id_movimento, $valor, $observacao);
+        //$movimento = $regraMovimento->pegarDoPost();
+        //$regraMovimento->pagar($movimento);
+    }
+    elseif ($_POST['acao'] == 'movimento-cancelar') {
+        $id_movimento = intval($_POST['id_movimento']);
+        $observacao = $_POST['observacao'];
+        $regraMovimento->cancelar($id_movimento, $observacao);
+        //$movimento = $regraMovimento->pegarDoPost();
+        //$regraMovimento->pagar($movimento);
+    }
+}
+
 //var_dump(basename($_SERVER["SCRIPT_FILENAME"], '.php'));

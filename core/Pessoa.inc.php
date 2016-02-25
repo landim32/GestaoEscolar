@@ -44,6 +44,8 @@ class Pessoa {
                 pessoa.nome,
                 pessoa.data_nascimento,
                 pessoa.genero,
+                pessoa.cpf_cnpj,
+                pessoa.valor_mensalidade,
                 pessoa.telefone1,
                 pessoa.telefone2,
                 pessoa.telefone3,
@@ -104,6 +106,8 @@ class Pessoa {
                 pessoa.nome,
                 pessoa.data_nascimento,
                 pessoa.genero,
+                pessoa.cpf_cnpj,
+                pessoa.valor_mensalidade,
                 pessoa.telefone1,
                 pessoa.telefone2,
                 pessoa.telefone3,
@@ -149,6 +153,8 @@ class Pessoa {
                 pessoa.nome,
                 pessoa.data_nascimento,
                 pessoa.genero,
+                pessoa.cpf_cnpj,
+                pessoa.valor_mensalidade,
                 pessoa.telefone1,
                 pessoa.telefone2,
                 pessoa.telefone3,
@@ -204,6 +210,10 @@ class Pessoa {
             $pessoa->data_nascimento = dateToSql($_POST['data_nascimento']);
         if (array_key_exists('genero', $_POST))
             $pessoa->genero = $_POST['genero'];
+        if (array_key_exists('cpf_cnpj', $_POST))
+            $pessoa->cpf_cnpj = $_POST['cpf_cnpj'];
+        if (array_key_exists('valor_mensalidade', $_POST))
+            $pessoa->valor_mensalidade = $_POST['valor_mensalidade'];
         if (array_key_exists('telefone1', $_POST))
             $pessoa->telefone1 = $_POST['telefone1'];
         if (array_key_exists('telefone2', $_POST))
@@ -257,6 +267,8 @@ class Pessoa {
                 nome,
                 data_nascimento,
                 genero,
+                cpf_cnpj,
+                valor_mensalidade,
                 telefone1,
                 telefone2,
                 telefone3,
@@ -280,6 +292,8 @@ class Pessoa {
                 '".do_escape($pessoa->nome)."',
                 '".do_escape($pessoa->data_nascimento)."',
                 ".do_escape_full($pessoa->genero).",
+                ".do_escape_full($pessoa->cpf_cnpj).",
+                '".do_escape(number_format($pessoa->valor_mensalidade, 2, '.', ''))."',
                 ".do_escape_full($pessoa->telefone1).",
                 ".do_escape_full($pessoa->telefone2).",
                 ".do_escape_full($pessoa->telefone3).",
@@ -340,6 +354,8 @@ class Pessoa {
                 nome = '".do_escape($pessoa->nome)."',
                 data_nascimento = '".do_escape($pessoa->data_nascimento)."',
                 genero = ".do_escape_full($pessoa->genero).",
+                cpf_cnpj = ".do_escape_full($pessoa->cpf_cnpj).",
+                valor_mensalidade = '".do_escape(number_format($pessoa->valor_mensalidade, 2, '.', ''))."',
                 telefone1 = ".do_escape_full($pessoa->telefone1).",
                 telefone2 = ".do_escape_full($pessoa->telefone2).",
                 telefone3 = ".do_escape_full($pessoa->telefone3).",
